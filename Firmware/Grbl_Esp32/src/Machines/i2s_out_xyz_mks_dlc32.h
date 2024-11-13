@@ -84,6 +84,7 @@
 
 // Laser pin set
 #define SPINDLE_TYPE                SpindleType::PWM 
+#define SPINDLE_DETECT_PIN          GPIO_NUM_39
 #ifdef USE_BOARD_V2_0
 #define SPINDLE_OUTPUT_PIN          GPIO_NUM_32
 #else 

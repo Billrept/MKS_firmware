@@ -33,12 +33,12 @@ void grbl_init() {
     disableCore1WDT();
 
     pinMode(LCD_EN, OUTPUT);
-    
     LCD_BLK_OFF;
-    
+
 #ifdef USE_I2S_OUT
     i2s_out_init();  // The I2S out must be initialized before it can access the expanded GPIO port
 #endif
+
     WiFi.persistent(false);
     WiFi.disconnect(true);
     WiFi.enableSTA(false);
@@ -47,7 +47,22 @@ void grbl_init() {
     client_init();  // Setup serial baud rate and interrupts
     display_init();
 
-// show the map name at startup
+    // Device Detection Logic
+    pinMode(SPINDLE_OUTPUT_PIN, INPUT);  // Set shared pin as input for detection
+    pinMode(SPINDLE_DETECT_PIN, INPUT);  // Set dedicated spindle detect pin as input
+
+    if (digitalRead(SPINDLE_OUTPUT_PIN) == HIGH && digitalRead(SPINDLE_DETECT_PIN) == LOW) {
+        Serial.println("Laser module detected. Activating laser mode.");
+    } else if (digitalRead(SPINDLE_DETECT_PIN) == HIGH) {
+        Serial.println("Spindle module detected. Activating spindle mode.");
+    } else {
+        Serial.println("No device detected on GPIO 32 or GPIO 39.");
+    }
+
+    // Reconfigure SPINDLE_OUTPUT_PIN as output after detection
+    pinMode(SPINDLE_OUTPUT_PIN, OUTPUT);
+
+    // Remaining initialization functions
 #ifdef MACHINE_NAME
     // report_machine_type(CLIENT_SERIAL);
 #endif
@@ -57,26 +72,21 @@ void grbl_init() {
     init_motors();
     memset(sys_position, 0, sizeof(sys_position));  // Clear machine position.
     machine_init();                                 // weak definition in Grbl.cpp does nothing
-    // Initialize system state.
+
 #ifdef FORCE_INITIALIZATION_ALARM
-    // Force Grbl into an ALARM state upon a power-cycle or hard reset.
     sys.state = State::Alarm;
 #else
     sys.state = State::Idle;
 #endif
-    // Check for power-up and set system alarm if homing is enabled to force homing cycle
-    // by setting Grbl's alarm state. Alarm locks out all g-code commands, including the
-    // startup scripts, but allows access to settings and internal commands. Only a homing
-    // cycle '$H' or kill alarm locks '$X' will disable the alarm.
-    // NOTE: The startup script will run after successful completion of the homing cycle, but
-    // not after disabling the alarm locks. Prevents motion startup blocks from crashing into
-    // things uncontrollably. Very bad.
+
 #ifdef HOMING_INIT_LOCK
     if (homing_enable->get()) {
         sys.state = State::Alarm;
     }
 #endif
+
     Spindles::Spindle::select();
+
 #ifdef ENABLE_WIFI
     // WebUI::wifi_config.begin();
 #endif
@@ -85,6 +95,7 @@ void grbl_init() {
 #endif
     WebUI::inputBuffer.begin();
 }
+
 
 void phy_init_reinit(void) {
     coolant_init();
