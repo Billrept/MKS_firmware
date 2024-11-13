@@ -1,6 +1,5 @@
 # MKS-DLC32-FIRMWARE
-The source code of MKS DLC32.
-
+Updated tools detection for Conference submssion.
 ## Environment construction:
 
 - vscode
