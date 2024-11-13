@@ -74,7 +74,7 @@
 #define Y_DISABLE_PIN               I2SO(0)
 #define Y_DIRECTION_PIN             I2SO(6)
 #define Y_STEP_PIN                  I2SO(5)
-    
+
 // Z I2S pin set
 #if defined(USR_Z_MOTOR)
 #define Z_DISABLE_PIN               I2SO(0)
@@ -82,14 +82,14 @@
 #define Z_STEP_PIN                  I2SO(3)
 #endif
 
-// Laser pin set
 #define SPINDLE_TYPE                SpindleType::PWM 
-#define SPINDLE_DETECT_PIN          GPIO_NUM_39
+#define SPINDLE_DETECT_PIN          GPIO_NUM_21
 #ifdef USE_BOARD_V2_0
 #define SPINDLE_OUTPUT_PIN          GPIO_NUM_32
 #else 
 #define SPINDLE_OUTPUT_PIN          GPIO_NUM_22
 #endif
+
 
 #define X_LIMIT_PIN                 GPIO_NUM_36
 #define Y_LIMIT_PIN                 GPIO_NUM_35
@@ -124,7 +124,7 @@
 #define GRBL_SPI_MISO 			    GPIO_NUM_12
 #define GRBL_SPI_MOSI 			    GPIO_NUM_13
 #define GRBL_SPI_SS 			    GPIO_NUM_15
-#define SDCARD_DET_PIN 			    GPIO_NUM_39
+#define SDCARD_DET_PIN 			    GPIO_NUM_33
 #define GRBL_SPI_FREQ 			    40000000
 
 // === Default settings
@@ -190,4 +190,3 @@
 
 #define DEFAULT_BEEP_STATUS                 1
 #define DEFAULT_LANGUAGE_STATUS             1       // default simple engliash
-
